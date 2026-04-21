@@ -5,11 +5,19 @@ import { Mail, Lock, Eye, EyeOff, BookOpen, Shield, HelpCircle, FileText, Globe 
 const Login = () => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // For now, any login is successful
-        navigate("/dashboard");
+        
+        if (email === "admin@skyes.com" && password === "Admin") {
+            setError("");
+            navigate("/dashboard");
+        } else {
+            setError("Invalid email or password. Please try again.");
+        }
     };
 
     return (
@@ -90,6 +98,12 @@ const Login = () => {
                         </p>
                     </div>
 
+                    {error && (
+                        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm font-medium animate-in fade-in slide-in-from-top-1">
+                            {error}
+                        </div>
+                    )}
+
                     {/* Form */}
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         {/* Email */}
@@ -103,8 +117,11 @@ const Login = () => {
                                 </span>
                                 <input 
                                     type="email" 
-                                    placeholder="admin@sykesmanuals.com"
+                                    placeholder="admin@skyes.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-600 transition-all outline-none text-gray-900 bg-white"
+                                    required
                                 />
                             </div>
                         </div>
@@ -121,7 +138,10 @@ const Login = () => {
                                 <input 
                                     type={showPassword ? "text" : "password"} 
                                     placeholder="••••••••••••"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     className="block w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-600 transition-all outline-none text-gray-900 bg-white font-mono"
+                                    required
                                 />
                                 <button 
                                     type="button"

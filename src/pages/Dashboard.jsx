@@ -87,9 +87,9 @@ const LineChartComponent = () => {
             <Line 
               type="monotone" 
               dataKey="sales" 
-              stroke="#2563eb" 
+              stroke="#DC2626" 
               strokeWidth={3} 
-              dot={{ r: 4, fill: '#2563eb', strokeWidth: 2, stroke: '#fff' }}
+              dot={{ r: 4, fill: '#DC2626', strokeWidth: 2, stroke: '#fff' }}
               activeDot={{ r: 6, strokeWidth: 0 }}
             />
           </LineChart>
@@ -108,7 +108,7 @@ const CategoryPieChart = () => {
     { name: 'Others', value: 5 },
   ];
 
-  const COLORS = ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe'];
+  const COLORS = ['#DC2626', '#EF4444', '#F87171', '#FCA5A5', '#FECACA'];
 
   return (
     <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm h-full">
@@ -176,7 +176,7 @@ const Dashboard = () => {
               change="12.5%" 
               isPositive={true} 
               icon={IndianRupee}
-              iconBg="bg-blue-50 text-blue-600"
+              iconBg="bg-red-50 text-red-600"
             />
             <StatCard 
               title="Total Sales" 

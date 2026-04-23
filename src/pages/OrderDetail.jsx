@@ -28,10 +28,25 @@ import { mockOrders } from '../data/mockOrders';
 const OrderDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [expiryDate, setExpiryDate] = React.useState('');
+  const [isExtending, setIsExtending] = React.useState(false);
 
   // Find the specific order from mockOrders
-  // Handle cases where the ID in URL might not have '#' or matches either way
   const order = mockOrders.find(o => o.id === `#${id}` || o.id === id);
+
+  React.useEffect(() => {
+    if (order) {
+      // Logic to calculate 24 hours after placedOn
+      // order.placedOn is like "Oct 24, 2023 at 14:30 PM"
+      const parts = order.placedOn.split(' at ');
+      if (parts.length === 2) {
+        const baseDate = new Date(parts[0]);
+        const expiry = new Date(baseDate.getTime() + (24 * 60 * 60 * 1000));
+        const formattedExpiry = expiry.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' at ' + parts[1];
+        setExpiryDate(formattedExpiry);
+      }
+    }
+  }, [order]);
 
   if (!order) {
     return (
@@ -125,7 +140,7 @@ const OrderDetail = () => {
             <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-start justify-between">
               <div>
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="p-2 bg-blue-50 rounded-xl text-blue-600">
+                  <div className="p-2 bg-red-50 rounded-xl text-red-600">
                     <CreditCard className="w-5 h-5" />
                   </div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Method</span>
@@ -238,6 +253,27 @@ const OrderDetail = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Internal Notes */}
+              <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-100">
+                  <h3 className="flex items-center gap-2 text-sm font-bold text-slate-800">
+                    <FileText className="w-4 h-4 text-slate-400" />
+                    Internal Notes
+                  </h3>
+                </div>
+                <div className="p-8 space-y-4">
+                  <textarea 
+                    className="w-full h-32 p-4 rounded-xl bg-slate-50 border border-slate-100 text-sm text-slate-600 focus:outline-none focus:border-red-400 transition-all resize-none placeholder:text-slate-400 font-medium"
+                    placeholder="Add a private note about this order (only visible to admins)..."
+                  ></textarea>
+                  <div className="flex justify-end">
+                    <button className="px-8 py-2.5 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-900 transition-all cursor-pointer shadow-sm shadow-slate-200">
+                      Save Note
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Right Column */}
@@ -263,6 +299,35 @@ const OrderDetail = () => {
                       </div>
                     ))}
                   </div>
+                </div>
+              </div>
+
+              {/* Link Expiration Box */}
+              <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden border-l-4 border-l-amber-400">
+                <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                  <h3 className="flex items-center gap-2 text-sm font-bold text-slate-800">
+                    <LinkIcon className="w-4 h-4 text-amber-500" />
+                    Download Link Status
+                  </h3>
+                  <span className="px-2 py-0.5 bg-amber-50 text-amber-600 rounded text-[9px] font-black uppercase tracking-widest">Expires Soon</span>
+                </div>
+                <div className="p-6">
+                  <p className="text-xs text-slate-500 font-medium mb-4 leading-relaxed">
+                    The customer's download link is set to expire <span className="text-slate-800 font-bold">24 hours</span> after the order was placed.
+                  </p>
+                  
+                  <div className="bg-amber-50/50 rounded-xl p-4 border border-amber-100 mb-6">
+                    <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">Expiration Date & Time</p>
+                    <p className="text-sm font-bold text-slate-800">{expiryDate}</p>
+                  </div>
+
+                  <button 
+                    onClick={() => setIsExtending(true)}
+                    className="w-full flex items-center justify-center gap-2 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-50 hover:border-slate-300 transition-all cursor-pointer shadow-sm"
+                  >
+                    <Calendar className="w-4 h-4 text-slate-400" />
+                    Extend Link Validity
+                  </button>
                 </div>
               </div>
 
@@ -294,29 +359,60 @@ const OrderDetail = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Internal Notes */}
-              <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-slate-100">
-                  <h3 className="flex items-center gap-2 text-sm font-bold text-slate-800">
-                    <FileText className="w-4 h-4 text-slate-400" />
-                    Internal Notes
-                  </h3>
-                </div>
-                <div className="p-6 space-y-4">
-                  <textarea 
-                    className="w-full h-32 p-4 rounded-xl bg-slate-50 border border-slate-100 text-sm text-slate-600 focus:outline-none focus:border-blue-400 transition-all resize-none placeholder:text-slate-400"
-                    placeholder="Add a note about this order..."
-                  ></textarea>
-                  <button className="w-full py-2.5 bg-slate-50 text-slate-600 border border-slate-200 rounded-xl text-xs font-bold hover:bg-white hover:border-slate-300 transition-all cursor-pointer">
-                    Save Note
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
         </main>
       </div>
+
+      {/* Extend Expiry Modal */}
+      {isExtending && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-8 animate-in zoom-in-95 duration-200">
+            <div className="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mb-6">
+              <Calendar className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-black text-slate-800 mb-2">Extend Link Validity</h3>
+            <p className="text-sm text-slate-500 font-medium mb-6">Select a new date and time for the download link to expire.</p>
+            
+            <div className="space-y-4 mb-8">
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">New Expiry Date</label>
+                <input 
+                  type="date" 
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold text-slate-800 outline-none focus:border-red-500"
+                  defaultValue="2023-10-26"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">New Expiry Time</label>
+                <input 
+                  type="time" 
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold text-slate-800 outline-none focus:border-red-500"
+                  defaultValue="14:30"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <button 
+                onClick={() => {
+                  setIsExtending(false);
+                  setExpiryDate("Oct 26, 2023 at 14:30 PM"); // Mock update
+                }}
+                className="w-full py-3.5 bg-slate-800 text-white rounded-2xl text-sm font-black hover:bg-slate-900 transition-all shadow-xl shadow-slate-100 cursor-pointer"
+              >
+                Update Expiration
+              </button>
+              <button 
+                onClick={() => setIsExtending(false)}
+                className="w-full py-3.5 text-sm font-black text-slate-400 hover:text-slate-600 transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

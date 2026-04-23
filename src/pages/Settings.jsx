@@ -5,6 +5,9 @@ import {
   ChevronRight,
   Pencil,
   ShieldCheck,
+  Plus,
+  Trash2,
+  AlertCircle
 } from "lucide-react";
 
 const SettingsTab = ({ label, active, onClick }) => (
@@ -12,7 +15,7 @@ const SettingsTab = ({ label, active, onClick }) => (
     onClick={onClick}
     className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
       active
-        ? "bg-[#EFF6FF] text-[#2563EB]"
+        ? "bg-[#FEF2F2] text-[#DC2626]"
         : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
     }`}
   >
@@ -38,8 +41,61 @@ const SecuritySection = ({ title, description, children, action }) => (
 );
 
 const Settings = () => {
-  const [activeTab, setActiveTab] = useState("Security");
+  const [activeTab, setActiveTab] = useState("Categories");
+  const [activeCategoryTab, setActiveCategoryTab] = useState("Primary");
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
+
+  // Category State
+  const [categories, setCategories] = useState({
+    Primary: ["Heavy Machinery", "Construction", "Agriculture", "Industrial", "Power Tools", "Mining"],
+    Secondary: ["Excavators", "Tractors", "Loaders", "Generators", "Drills", "Crushers"],
+    Third: ["300 Series", "5000 Series", "L-Series", "Silent Gen", "SDS Plus", "Primary Crusher"]
+  });
+
+  // Modal States
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  
+  const [inputValue, setInputValue] = useState("");
+  const [selectedPrimary, setSelectedPrimary] = useState("");
+  const [selectedSecondary, setSelectedSecondary] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(null);
+
+  // Handlers
+  const handleAdd = () => {
+    if (!inputValue.trim()) return;
+    setCategories({
+      ...categories,
+      [activeCategoryTab]: [...categories[activeCategoryTab], inputValue]
+    });
+    setInputValue("");
+    setIsAddModalOpen(false);
+  };
+
+  const handleEdit = () => {
+    if (!inputValue.trim() || selectedIndex === null) return;
+    const updated = [...categories[activeCategoryTab]];
+    updated[selectedIndex] = inputValue;
+    setCategories({
+      ...categories,
+      [activeCategoryTab]: updated
+    });
+    setInputValue("");
+    setSelectedIndex(null);
+    setIsEditModalOpen(false);
+  };
+
+  const handleDelete = () => {
+    if (selectedIndex === null) return;
+    const updated = categories[activeCategoryTab].filter((_, i) => i !== selectedIndex);
+    setCategories({
+      ...categories,
+      [activeCategoryTab]: updated
+    });
+    setSelectedIndex(null);
+    setIsDeleteModalOpen(false);
+  };
 
   return (
     <div className="flex min-h-screen bg-[#F8FAFC]">
@@ -65,7 +121,9 @@ const Settings = () => {
                 <nav className="space-y-1.5 flex-">
                   <SettingsTab label="My Profile" active={activeTab === "Profile"} onClick={() => setActiveTab("Profile")} />
                   <SettingsTab label="Organization" active={activeTab === "Organization"} onClick={() => setActiveTab("Organization")} />
+                  <SettingsTab label="Categories" active={activeTab === "Categories"} onClick={() => setActiveTab("Categories")} />
                   <SettingsTab label="Payments & Tax" active={activeTab === "Payments"} onClick={() => setActiveTab("Payments")} />
+                  <SettingsTab label="Roles & Permission" active={activeTab === "Roles"} onClick={() => setActiveTab("Roles")} />
                   <SettingsTab label="Security" active={activeTab === "Security"} onClick={() => setActiveTab("Security")} />
                   <SettingsTab label="Notifications" active={activeTab === "Notifications"} onClick={() => setActiveTab("Notifications")} />
                 </nav>
@@ -119,7 +177,7 @@ const Settings = () => {
                               onChange={() => setTwoFactorEnabled(!twoFactorEnabled)} 
                               className="sr-only peer" 
                             />
-                            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
                           </label>
                         }
                       >
@@ -129,7 +187,89 @@ const Settings = () => {
                   </div>
                 )}
 
-                {activeTab !== "Security" && (
+                {activeTab === "Categories" && (
+                  <div className="flex-1 flex flex-col">
+                    <div className="mb-8">
+                      <h3 className="text-2xl font-black text-slate-800 mb-2">Categories</h3>
+                      <p className="text-sm text-slate-400 font-medium">Manage your 3-level manual category structure.</p>
+                    </div>
+
+                    {/* Sub-tabs */}
+                    <div className="flex items-center gap-1 p-1 bg-slate-50 rounded-2xl w-fit mb-8 border border-slate-100/50">
+                      {["Primary", "Secondary", "Third"].map((tab) => (
+                        <button
+                          key={tab}
+                          onClick={() => setActiveCategoryTab(tab)}
+                          className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                            activeCategoryTab === tab
+                              ? "bg-white text-red-600 shadow-sm"
+                              : "text-slate-400 hover:text-slate-600"
+                          }`}
+                        >
+                          {tab} Categories
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="flex-1 bg-slate-50/50 rounded-3xl border border-slate-100 p-8">
+                      <div className="flex items-center justify-between mb-6">
+                        <div>
+                          <h4 className="text-base font-bold text-slate-800">{activeCategoryTab} Categories</h4>
+                          <p className="text-xs text-slate-400 font-semibold mt-1">
+                            {activeCategoryTab === "Primary" && "Top-level main manual groupings."}
+                            {activeCategoryTab === "Secondary" && "Specific manual types under primary categories."}
+                            {activeCategoryTab === "Third" && "Individual model series or sub-specializations."}
+                          </p>
+                        </div>
+                        <button 
+                          onClick={() => {
+                            setInputValue("");
+                            setIsAddModalOpen(true);
+                          }}
+                          className="flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-900 transition-all cursor-pointer shadow-sm"
+                        >
+                          <Plus className="w-3.5 h-3.5" /> Add {activeCategoryTab}
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        {categories[activeCategoryTab].map((cat, i) => (
+                          <div key={i} className="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-sm flex items-center justify-between group hover:border-red-200 transition-all">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 font-bold text-xs">
+                                {i + 1}
+                              </div>
+                              <span className="text-sm font-bold text-slate-700">{cat}</span>
+                            </div>
+                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                              <button 
+                                onClick={() => {
+                                  setInputValue(cat);
+                                  setSelectedIndex(i);
+                                  setIsEditModalOpen(true);
+                                }}
+                                className="p-1.5 hover:bg-slate-50 text-slate-400 hover:text-slate-600 rounded-lg transition-all cursor-pointer"
+                              >
+                                <Pencil className="w-3.5 h-3.5" />
+                              </button>
+                              <button 
+                                onClick={() => {
+                                  setSelectedIndex(i);
+                                  setIsDeleteModalOpen(true);
+                                }}
+                                className="p-1.5 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-lg transition-all cursor-pointer"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab !== "Security" && activeTab !== "Categories" && (
                   <div className="flex-1 flex flex-col items-center justify-center opacity-40">
                     <p className="italic font-bold text-slate-400">{activeTab} settings coming soon...</p>
                   </div>
@@ -142,13 +282,113 @@ const Settings = () => {
               <button className="px-6 py-2.5 text-sm font-bold text-slate-500 hover:text-slate-800 transition-all cursor-pointer">
                 Cancel
               </button>
-              <button className="px-8 py-2.5 bg-[#3B82F6] text-white rounded-xl text-sm font-bold hover:bg-[#2563EB] transition-all shadow-lg shadow-blue-100 cursor-pointer">
+              <button className="px-8 py-2.5 bg-[#EF4444] text-white rounded-xl text-sm font-bold hover:bg-[#DC2626] transition-all shadow-lg shadow-red-100 cursor-pointer">
                 Save Changes
               </button>
             </div>
           </div>
         </main>
       </div>
+      {/* Modals */}
+      {(isAddModalOpen || isEditModalOpen) && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-8 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-black text-slate-800 mb-6">{isAddModalOpen ? 'Add New' : 'Edit'} {activeCategoryTab} Category</h3>
+            
+            <div className="space-y-6 mb-8">
+              {/* Parent Primary Dropdown (for Secondary and Third) */}
+              {(activeCategoryTab === "Secondary" || activeCategoryTab === "Third") && (
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Primary Category</label>
+                  <select 
+                    value={selectedPrimary}
+                    onChange={e => setSelectedPrimary(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold text-slate-800 outline-none focus:border-red-500 cursor-pointer"
+                  >
+                    <option value="">Select Primary...</option>
+                    {categories.Primary.map((cat, idx) => (
+                      <option key={idx} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Parent Secondary Dropdown (for Third only) */}
+              {activeCategoryTab === "Third" && (
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Secondary Category</label>
+                  <select 
+                    value={selectedSecondary}
+                    onChange={e => setSelectedSecondary(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold text-slate-800 outline-none focus:border-red-500 cursor-pointer"
+                  >
+                    <option value="">Select Secondary...</option>
+                    {categories.Secondary.map((cat, idx) => (
+                      <option key={idx} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Category Name</label>
+                <input 
+                  type="text" 
+                  value={inputValue}
+                  onChange={e => setInputValue(e.target.value)}
+                  autoFocus
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold text-slate-800 outline-none focus:border-red-500"
+                  placeholder="Enter name..."
+                />
+              </div>
+            </div>
+            <div className="flex flex-col gap-3">
+              <button 
+                onClick={isAddModalOpen ? handleAdd : handleEdit}
+                className="w-full py-3.5 bg-slate-800 text-white rounded-2xl text-sm font-black hover:bg-slate-900 transition-all shadow-xl shadow-slate-100 cursor-pointer"
+              >
+                {isAddModalOpen ? 'Create Category' : 'Save Changes'}
+              </button>
+              <button 
+                onClick={() => {
+                  setIsAddModalOpen(false);
+                  setIsEditModalOpen(false);
+                  setInputValue("");
+                }}
+                className="w-full py-3.5 text-sm font-black text-slate-400 hover:text-slate-600 transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-8">
+            <div className="w-12 h-12 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mb-6">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-black text-slate-800 mb-2">Delete Category?</h3>
+            <p className="text-sm text-slate-500 font-medium mb-8">Are you sure you want to delete <span className="font-bold text-slate-800">"{categories[activeCategoryTab][selectedIndex]}"</span>? This action cannot be undone.</p>
+            <div className="flex flex-col gap-3">
+              <button 
+                onClick={handleDelete}
+                className="w-full py-3.5 bg-red-500 text-white rounded-2xl text-sm font-black hover:bg-red-600 transition-all shadow-xl shadow-red-100 cursor-pointer"
+              >
+                Delete Category
+              </button>
+              <button 
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="w-full py-3.5 text-sm font-black text-slate-400 hover:text-slate-600 transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

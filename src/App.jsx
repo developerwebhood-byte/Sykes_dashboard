@@ -9,6 +9,7 @@ import Payments from './pages/Payments'
 import OrderDetail from './pages/OrderDetail'
 import Customers from './pages/Customers'
 import Settings from './pages/Settings'
+import ManualDetail from './pages/ManualDetail'
 
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           <Route path="/order-detail/:id" element={<OrderDetail />} />
           <Route path="/customers" element={<Customers />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/manual-detail/:id" element={<ManualDetail />} />
         </Routes>
       </BrowserRouter>
     </>

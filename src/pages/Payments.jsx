@@ -112,26 +112,126 @@ const OrderRow = ({ id, customer, manual, manualType, amount, status, date, time
 
 const Payments = () => {
   const [statusFilter, setStatusFilter] = useState('All Status');
+  const [dateRange, setDateRange] = useState('All Time');
   const navigate = useNavigate();
 
-  const orders = mockOrders;
+  const handleExportCSV = () => {
+    const headers = ['Order ID', 'Customer Name', 'Email', 'Manual', 'Amount', 'Status', 'Date', 'Time'];
+    const csvData = mockOrders.map(order => [
+      order.id,
+      order.customer.name,
+      order.customer.email,
+      `"${order.manual.replace(/"/g, '""')}"`, // Escape quotes
+      order.amount,
+      order.status,
+      order.date,
+      order.time
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...csvData.map(row => row.join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `skyes_orders_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Helper to parse Oct 24, 2023 format
+  const parseDate = (dateStr) => {
+    return new Date(dateStr);
+  };
+
+  // Filter orders based on status and date range
+  const filteredOrders = mockOrders.filter(order => {
+    const statusMatch = statusFilter === 'All Status' || order.status === statusFilter;
+    
+    // For mock purposes, we'll treat "Today" as Oct 24, 2023
+    const orderDate = parseDate(order.date);
+    const today = new Date('Oct 24, 2023');
+    let dateMatch = true;
+
+    if (dateRange === 'Today') {
+      dateMatch = order.date === 'Oct 24, 2023';
+    } else if (dateRange === 'Yesterday') {
+      dateMatch = order.date === 'Oct 23, 2023';
+    } else if (dateRange === 'Last 7 Days') {
+      // All mock data falls within 7 days of Oct 24
+      dateMatch = true; 
+    }
+
+    return statusMatch && dateMatch;
+  });
+
+  // Calculate dynamic stats
+  const stats = {
+    totalOrders: filteredOrders.length,
+    totalRevenue: filteredOrders.filter(o => o.status === 'Success').reduce((acc, o) => acc + o.amount, 0),
+    pendingOrders: filteredOrders.filter(o => o.status === 'Pending').length,
+    failedPayments: filteredOrders.filter(o => o.status === 'Failed').length
+  };
 
   return (
     <div className="flex min-h-screen bg-[#F9FAFB]">
       <Sidebar />
       <div className="flex-1 ml-72">
         {/* Header */}
-        <header className="h-16 bg-white border-b border-gray-100 flex items-center px-8 sticky top-0 z-40">
+        <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-8 sticky top-0 z-40">
           <h2 className="text-base font-bold text-gray-900">Payments &amp; Orders</h2>
+          
+          <button 
+            onClick={handleExportCSV}
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-xl text-xs font-bold hover:bg-gray-50 transition-all cursor-pointer shadow-sm group"
+          >
+            <div className="p-1 bg-green-50 text-green-600 rounded-lg group-hover:bg-green-100 transition-colors">
+              <Download className="w-3.5 h-3.5" />
+            </div>
+            Export as CSV
+          </button>
         </header>
 
         <main className="p-6">
           {/* Stat Cards */}
           <div className="grid grid-cols-4 gap-4 mb-8">
-            <StatCard title="Total Orders" value="1,248" trend={12.5} trendLabel="vs last month" icon={ShoppingBag} iconBg="bg-blue-50 text-blue-600" />
-            <StatCard title="Total Revenue" value="₹45,230" trend={8.2} trendLabel="vs last month" icon={IndianRupee} iconBg="bg-green-50 text-green-600" />
-            <StatCard title="Pending Orders" value="42" trend={-2.4} trendLabel="vs last month" icon={Clock} iconBg="bg-orange-50 text-orange-500" />
-            <StatCard title="Failed Payments" value="18" trendLabel="Requires attention" icon={AlertTriangle} iconBg="bg-red-50 text-red-500" isAlert />
+            <StatCard 
+              title="Total Orders" 
+              value={stats.totalOrders.toLocaleString()} 
+              trend={12.5} 
+              trendLabel="vs last period" 
+              icon={ShoppingBag} 
+              iconBg="bg-red-50 text-red-600" 
+            />
+            <StatCard 
+              title="Total Revenue" 
+              value={`₹${stats.totalRevenue.toLocaleString()}`} 
+              trend={8.2} 
+              trendLabel="vs last period" 
+              icon={IndianRupee} 
+              iconBg="bg-green-50 text-green-600" 
+            />
+            <StatCard 
+              title="Pending Orders" 
+              value={stats.pendingOrders.toString()} 
+              trend={-2.4} 
+              trendLabel="vs last period" 
+              icon={Clock} 
+              iconBg="bg-orange-50 text-orange-500" 
+            />
+            <StatCard 
+              title="Failed Payments" 
+              value={stats.failedPayments.toString()} 
+              trendLabel="Requires attention" 
+              icon={AlertTriangle} 
+              iconBg="bg-red-50 text-red-500" 
+              isAlert 
+            />
           </div>
 
           {/* Orders Table */}
@@ -139,8 +239,12 @@ const Payments = () => {
             {/* Table Toolbar */}
             <div className="px-4 py-4 border-b border-gray-100 flex items-center gap-3">
               <div className="shrink-0">
-                <span className="text-sm font-bold text-gray-900 mr-2">All Orders</span>
-                <span className="text-[10px] font-bold text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full border border-gray-100">1,248 total</span>
+                <span className="text-sm font-bold text-gray-900 mr-2">
+                  {statusFilter === 'All Status' ? 'All Orders' : `${statusFilter} Orders`}
+                </span>
+                <span className="text-[10px] font-bold text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full border border-gray-100">
+                  {filteredOrders.length} total
+                </span>
               </div>
 
               <div className="ml-auto flex items-center gap-2">
@@ -149,7 +253,7 @@ const Payments = () => {
                   <input
                     type="text"
                     placeholder="Search Order ID..."
-                    className="pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-100 rounded-xl text-xs font-medium text-gray-600 outline-none focus:border-blue-400 w-36 transition-all"
+                    className="pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-100 rounded-xl text-xs font-medium text-gray-600 outline-none focus:border-red-400 w-36 transition-all"
                   />
                 </div>
                 <div className="relative">
@@ -164,9 +268,20 @@ const Payments = () => {
                   </select>
                   <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
                 </div>
-                <button className="p-1.5 bg-gray-50 border border-gray-100 rounded-xl text-gray-500 hover:bg-gray-100 cursor-pointer">
-                  <Calendar className="w-3.5 h-3.5" />
-                </button>
+                <div className="relative">
+                  <select
+                    value={dateRange}
+                    onChange={e => setDateRange(e.target.value)}
+                    className="appearance-none pl-8 pr-8 py-1.5 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold text-gray-600 outline-none cursor-pointer hover:bg-gray-100 transition-colors"
+                  >
+                    <option>All Time</option>
+                    <option>Today</option>
+                    <option>Yesterday</option>
+                    <option>Last 7 Days</option>
+                  </select>
+                  <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+                </div>
               </div>
             </div>
 
@@ -183,13 +298,27 @@ const Payments = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {orders.map(order => (
-                    <OrderRow 
-                      key={order.id} 
-                      {...order} 
-                      onClick={() => navigate(`/order-detail/${order.id.replace('#', '')}`)} 
-                    />
-                  ))}
+                  {filteredOrders.length > 0 ? (
+                    filteredOrders.map(order => (
+                      <OrderRow 
+                        key={order.id} 
+                        {...order} 
+                        onClick={() => navigate(`/order-detail/${order.id.replace('#', '')}`)} 
+                      />
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={7} className="py-20 text-center">
+                        <div className="flex flex-col items-center">
+                          <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center mb-4">
+                            <Search className="w-6 h-6 text-gray-300" />
+                          </div>
+                          <p className="text-sm font-bold text-gray-900">No orders found</p>
+                          <p className="text-xs text-gray-400 font-medium mt-1">Try adjusting your filters or date range</p>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -197,9 +326,9 @@ const Payments = () => {
             {/* Pagination */}
             <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
               <p className="text-sm font-medium text-gray-500">
-                Showing <span className="font-bold text-gray-900">1</span> to{' '}
-                <span className="font-bold text-gray-900">10</span> of{' '}
-                <span className="font-bold text-gray-900">1,248</span> results
+                Showing <span className="font-bold text-gray-900">{filteredOrders.length > 0 ? 1 : 0}</span> to{' '}
+                <span className="font-bold text-gray-900">{filteredOrders.length}</span> of{' '}
+                <span className="font-bold text-gray-900">{filteredOrders.length}</span> results
               </p>
               <div className="flex items-center gap-2">
                 <button className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-40 cursor-pointer transition-colors" disabled>
@@ -208,7 +337,7 @@ const Payments = () => {
                 <div className="flex gap-1">
                   {[1, 2, 3].map(page => (
                     <button key={page} className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold transition-all cursor-pointer ${
-                      page === 1 ? 'bg-blue-600 text-white shadow-md shadow-blue-100' : 'text-gray-500 border border-gray-200 hover:bg-gray-50'
+                      page === 1 ? 'bg-red-600 text-white shadow-md shadow-red-100' : 'text-gray-500 border border-gray-200 hover:bg-gray-50'
                     }`}>
                       {page}
                     </button>

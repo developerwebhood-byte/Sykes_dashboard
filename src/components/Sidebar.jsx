@@ -11,11 +11,11 @@ import {
   BookOpen
 } from 'lucide-react';
 
-const SidebarItem = ({ icon: Icon, label, path = "#", active = false, activeColor = "bg-blue-600" }) => (
+const SidebarItem = ({ icon: Icon, label, path = "#", active = false, activeColor = "bg-red-600" }) => (
   <Link to={path} className={`
     flex items-center gap-2.5 px-3 py-2 rounded-xl cursor-pointer transition-all duration-200 group
     ${active 
-      ? `${activeColor} text-white shadow-lg shadow-blue-900/20` 
+      ? `${activeColor} text-white shadow-lg shadow-red-900/20` 
       : 'text-slate-400 hover:bg-white/5 hover:text-slate-100'}
   `}>
     <Icon className={`w-[18px] h-[18px] ${active ? 'text-white' : 'text-slate-400 group-hover:text-slate-100'}`} />
@@ -36,7 +36,7 @@ const Sidebar = () => {
     <div className="fixed top-0 left-0 w-72 h-screen bg-[#0B101B] flex flex-col border-r border-slate-900 text-white p-4 overflow-y-auto no-scrollbar hover:no-scrollbar transition-all font-sans">
       {/* Header / Logo */}
       <div className="flex items-center gap-3 mb-6 px-2 mt-1">
-        <div className="bg-blue-600 p-1.5 rounded-lg">
+        <div className="bg-red-600 p-1.5 rounded-lg">
           <BookOpen className="w-5 h-5 text-white" />
         </div>
         <span className="text-lg font-bold tracking-tight text-white">Sykes Manuals</span>
@@ -45,7 +45,7 @@ const Sidebar = () => {
       {/* Main Navigation */}
       <nav className="space-y-1 min-h-0">
         <SidebarItem icon={LayoutDashboard} label="Dashboard" path="/dashboard" active={location.pathname === '/dashboard'} />
-        <SidebarItem icon={Book} label="Manuals" path="/manuals" active={location.pathname === '/manuals'} />
+        <SidebarItem icon={Book} label="Manuals" path="/manuals" active={location.pathname === '/manuals' || location.pathname.startsWith('/manual-detail')} />
         <SidebarItem icon={CloudUpload} label="Upload Manuals" path="/upload" active={location.pathname === '/upload'} />
         <SidebarItem icon={Ticket} label="Coupons" path="/coupons" active={location.pathname === '/coupons'} />
         <SidebarItem icon={Users} label="Customers" path="/customers" active={location.pathname === '/customers'} />

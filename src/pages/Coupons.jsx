@@ -25,6 +25,7 @@ const CreateCouponView = ({ onBack }) => {
   const [applyTo, setApplyTo] = useState('all');
   const [startDate, setStartDate] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
+  const [minOrderValue, setMinOrderValue] = useState('');
 
   const previewCode = code.toUpperCase() || 'COUPONCODE';
   const previewDiscount = discountValue
@@ -33,6 +34,7 @@ const CreateCouponView = ({ onBack }) => {
   const previewLimit = usageLimit === 'Unlimited uses' ? 'Unlimited' : usageLimit;
   const previewExpiry = expiryDate || 'No expiry';
   const previewAppliesTo = applyTo === 'all' ? 'All Manuals' : 'Specific Manuals';
+  const previewMinOrder = minOrderValue ? `₹${minOrderValue}` : 'No minimum';
 
   return (
     <div className="flex-1 ml-72">
@@ -119,6 +121,23 @@ const CreateCouponView = ({ onBack }) => {
                 </select>
               </div>
 
+              {/* Minimum Order Value */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Minimum Order Value (₹)</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">₹</span>
+                  <input
+                    type="number"
+                    value={minOrderValue}
+                    onChange={e => setMinOrderValue(e.target.value)}
+                    placeholder="E.G., 500"
+                    min="0"
+                    className="w-full pl-8 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-700 placeholder-gray-400 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all"
+                  />
+                </div>
+                <p className="text-xs text-gray-400 mt-1.5 font-medium">Coupon will only apply if the cart subtotal is above this value.</p>
+              </div>
+
               {/* Apply To */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2.5">Apply To</label>
@@ -186,6 +205,7 @@ const CreateCouponView = ({ onBack }) => {
               {[
                 ['Status', <span key="s" className="text-green-600 font-bold text-sm">Active</span>],
                 ['Applies to', previewAppliesTo],
+                ['Min Order', previewMinOrder],
                 ['Usage Limit', previewLimit],
                 ['Valid until', previewExpiry],
               ].map(([label, value]) => (
@@ -267,7 +287,7 @@ const CouponRow = ({ code, discount, discountType, usageType, used, limit, statu
       <td className="py-4 px-4">
         <div className="flex items-center justify-end gap-1">
           {!isExpired && (
-            <button className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all cursor-pointer">
+            <button className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all cursor-pointer">
               <Pencil className="w-4 h-4" />
             </button>
           )}

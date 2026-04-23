@@ -22,12 +22,12 @@ const Login = () => {
 
     return (
         <div className="min-h-screen flex flex-col lg:grid lg:grid-cols-2">
-            {/* Left Section - Blue Branding */}
-            <div className="hidden lg:flex flex-col bg-blue-600 p-12 text-white relative overflow-hidden">
+            {/* Left Section - red Branding */}
+            <div className="hidden lg:flex flex-col bg-red-600 p-12 text-white relative overflow-hidden">
                 {/* Logo */}
                 <div className="flex items-center gap-2 mb-16 z-10">
                     <div className="bg-white p-2 rounded-lg">
-                        <BookOpen className="w-6 h-6 text-blue-600" />
+                        <BookOpen className="w-6 h-6 text-red-600" />
                     </div>
                     <span className="text-xl font-semibold tracking-tight">Sykes Manuals</span>
                 </div>
@@ -37,7 +37,7 @@ const Login = () => {
                     <h1 className="text-5xl font-bold leading-[1.1] mb-6">
                         Manage your digital manuals with ease.
                     </h1>
-                    <p className="text-blue-100 text-lg leading-relaxed mb-10">
+                    <p className="text-red-100 text-lg leading-relaxed mb-10">
                         Access the complete admin dashboard to oversee sales, manage inventory, and track customer analytics all in one secure place.
                     </p>
 
@@ -45,7 +45,7 @@ const Login = () => {
                     <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 w-fit mb-12">
                         <div className="flex -space-x-2">
                             {[1, 2, 3].map((i) => (
-                                <div key={i} className="w-10 h-10 rounded-full border-2 border-blue-600 overflow-hidden bg-gray-200">
+                                <div key={i} className="w-10 h-10 rounded-full border-2 border-red-600 overflow-hidden bg-gray-200">
                                     <img 
                                         src={`https://i.pravatar.cc/100?img=${10+i}`} 
                                         alt="Avatar" 
@@ -56,7 +56,7 @@ const Login = () => {
                         </div>
                         <div>
                             <p className="text-sm font-medium">Trusted by</p>
-                            <p className="text-xs text-blue-200">1,000+ Admins</p>
+                            <p className="text-xs text-red-200">1,000+ Admins</p>
                         </div>
                     </div>
                 </div>
@@ -80,7 +80,7 @@ const Login = () => {
                 </div>
 
                 {/* Footer Links (Left Side) */}
-                <div className="mt-auto flex gap-6 text-sm text-blue-100 z-10">
+                <div className="mt-auto flex gap-6 text-sm text-red-100 z-10">
                     <a href="#" className="hover:text-white transition-colors">Help Center</a>
                     <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
                     <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
@@ -112,7 +112,7 @@ const Login = () => {
                                 Email Address
                             </label>
                             <div className="relative group">
-                                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 group-focus-within:text-blue-600 transition-colors">
+                                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 group-focus-within:text-red-600 transition-colors">
                                     <Mail className="w-5 h-5" />
                                 </span>
                                 <input 
@@ -120,7 +120,7 @@ const Login = () => {
                                     placeholder="admin@skyes.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-600 transition-all outline-none text-gray-900 bg-white"
+                                    className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-100 focus:border-red-600 transition-all outline-none text-gray-900 bg-white"
                                     required
                                 />
                             </div>
@@ -132,7 +132,7 @@ const Login = () => {
                                 Password
                             </label>
                             <div className="relative group">
-                                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 group-focus-within:text-blue-600 transition-colors">
+                                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 group-focus-within:text-red-600 transition-colors">
                                     <Lock className="w-5 h-5" />
                                 </span>
                                 <input 
@@ -140,13 +140,13 @@ const Login = () => {
                                     placeholder="••••••••••••"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="block w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-600 transition-all outline-none text-gray-900 bg-white font-mono"
+                                    className="block w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-100 focus:border-red-600 transition-all outline-none text-gray-900 bg-white font-mono"
                                     required
                                 />
                                 <button 
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-blue-600 transition-colors"
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-red-600 transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                 </button>
@@ -158,11 +158,11 @@ const Login = () => {
                             <label className="flex items-center">
                                 <input 
                                     type="checkbox" 
-                                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                    className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
                                 />
                                 <span className="ml-2 text-sm text-gray-500">Remember me</span>
                             </label>
-                            <a href="#" className="text-sm font-medium text-blue-600 hover:text-blue-700">
+                            <a href="#" className="text-sm font-medium text-red-600 hover:text-red-700">
                                 Forgot password?
                             </a>
                         </div>
@@ -170,7 +170,7 @@ const Login = () => {
                         {/* Sign In Button */}
                         <button 
                             type="submit"
-                            className="w-full bg-blue-600 cursor-pointer hover:bg-blue-700 text-white font-semibold py-3 rounded-xl shadow-lg shadow-blue-200 transition-all transform active:scale-[0.98]"
+                            className="w-full bg-red-600 cursor-pointer hover:bg-red-700 text-white font-semibold py-3 rounded-xl shadow-lg shadow-red-200 transition-all transform active:scale-[0.98]"
                         >
                             Sign In to Dashboard
                         </button>

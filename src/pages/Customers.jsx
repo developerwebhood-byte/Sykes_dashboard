@@ -150,7 +150,7 @@ const Customers = () => {
         <main className="p-6">
           {/* Stats */}
           <div className="grid grid-cols-4 gap-4 mb-8">
-            <CustomersStatCard title="Total Customers" value="4,821" icon={Users} color="bg-blue-50 text-blue-600" trend={12} />
+            <CustomersStatCard title="Total Customers" value="4,821" icon={Users} color="bg-red-50 text-red-600" trend={12} />
             <CustomersStatCard title="Active Now" value="1,124" icon={UserCheck} color="bg-green-50 text-green-600" trend={5} />
             <CustomersStatCard title="Total New" value="450" icon={UserPlus} color="bg-purple-50 text-purple-600" trend={-2} />
             <CustomersStatCard title="Avg Retention" value="92%" icon={BarChart3} color="bg-orange-50 text-orange-600" trend={8} />
@@ -173,14 +173,14 @@ const Customers = () => {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search by name, email..."
-                    className="pl-9 pr-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-medium text-gray-600 placeholder-gray-400 outline-none focus:border-blue-300 w-48 transition-all"
+                    className="pl-9 pr-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-medium text-gray-600 placeholder-gray-400 outline-none focus:border-red-300 w-48 transition-all"
                   />
                 </div>
                 <div className="relative">
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="appearance-none pl-3 pr-8 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold text-gray-600 outline-none cursor-pointer hover:border-blue-200 transition-colors"
+                    className="appearance-none pl-3 pr-8 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold text-gray-600 outline-none cursor-pointer hover:border-red-200 transition-colors"
                   >
                     <option>All Status</option>
                     <option>Active</option>
@@ -188,7 +188,7 @@ const Customers = () => {
                   </select>
                   <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-all shadow-md shadow-blue-100 cursor-pointer">
+                <button className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-bold hover:bg-red-700 transition-all shadow-md shadow-red-100 cursor-pointer">
                   <UserPlus className="w-3.5 h-3.5" />
                   Add New
                 </button>
@@ -225,7 +225,7 @@ const Customers = () => {
                   <ChevronLeft className="w-4 h-4" /> Previous
                 </button>
                 <div className="flex gap-1.5">
-                  <button className="w-9 h-9 bg-blue-600 text-white rounded-lg text-sm font-bold shadow-md shadow-blue-100">1</button>
+                  <button className="w-9 h-9 bg-red-600 text-white rounded-lg text-sm font-bold shadow-md shadow-red-100">1</button>
                   <button className="w-9 h-9 border border-gray-100 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-50 transition-colors">2</button>
                   <button className="w-9 h-9 border border-gray-100 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-50 transition-colors">3</button>
                 </div>

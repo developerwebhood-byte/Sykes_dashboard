@@ -62,15 +62,7 @@ const Sidebar = () => {
         <SidebarItem icon={Settings} label="Settings" path="/settings" active={location.pathname === '/settings'} activeColor="bg-gray-700" />
 
         {/* Help Card */}
-        <div className="bg-[#141B26] border border-slate-800 rounded-xl p-3.5 shadow-sm">
-          <p className="text-xs font-semibold text-slate-400 mb-1">Need Help?</p>
-          <p className="text-[10px] text-slate-500 mb-2.5 leading-relaxed">
-            Check our docs or contact support.
-          </p>
-          <button className="w-full bg-[#202936] cursor-pointer hover:bg-[#2D3947] text-white py-1.5 rounded-lg text-[11px] font-medium transition-colors">
-            Get Support
-          </button>
-        </div>
+        
 
         {/* User Profile */}
         <div className="flex items-center justify-between group cursor-pointer p-1 rounded-xl hover:bg-white/5 transition-all">

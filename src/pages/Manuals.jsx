@@ -32,7 +32,7 @@ import {
   Image as ImageIcon
 } from 'lucide-react';
 
-const ManualRow = ({ title, id, category, subCategory, brand, model, price, date, selected, onToggle, onDelete, onDuplicate, onEdit, onCopyLink }) => {
+const ManualRow = ({ title, id, category, subCategory, status, price, date, selected, onToggle, onDelete, onDuplicate, onEdit, onCopyLink }) => {
   const [showMenu, setShowMenu] = React.useState(false);
   const menuRef = React.useRef(null);
 
@@ -78,9 +78,14 @@ const ManualRow = ({ title, id, category, subCategory, brand, model, price, date
         <p className="text-sm font-semibold text-gray-900 mb-0.5">{category}</p>
         <p className="text-[11px] text-gray-400 font-medium">{subCategory}</p>
       </td>
-      <td className="py-4 px-4 text-xs uppercase tracking-wider font-bold text-gray-500 whitespace-nowrap">
-        <p className="text-sm font-semibold text-gray-900 mb-0.5">{brand}</p>
-        <p className="text-[11px] text-gray-400 font-medium">{model}</p>
+      <td className="py-4 px-4 whitespace-nowrap">
+        <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${
+          status === 'Published' ? 'bg-green-50 text-green-600 border border-green-100' :
+          status === 'Draft' ? 'bg-amber-50 text-amber-600 border border-amber-100' :
+          'bg-slate-100 text-slate-500 border border-slate-200'
+        }`}>
+          {status || 'Draft'}
+        </span>
       </td>
       <td className="py-4 px-4 whitespace-nowrap">
         <p className="text-sm font-bold text-gray-900">₹{price}</p>
@@ -159,7 +164,8 @@ const ManualModal = ({ isOpen, onClose, manual, onSave }) => {
     tags: '',
     seoTitle: '',
     seoDescription: '',
-    seoKeywords: ''
+    seoKeywords: '',
+    status: 'Draft'
   });
   const [coverImage, setCoverImage] = React.useState(null);
   const coverInputRef = React.useRef(null);
@@ -180,13 +186,15 @@ const ManualModal = ({ isOpen, onClose, manual, onSave }) => {
         tags: manual.tags || '',
         seoTitle: manual.seoTitle || '',
         seoDescription: manual.seoDescription || '',
-        seoKeywords: manual.seoKeywords || ''
+        seoKeywords: manual.seoKeywords || '',
+        status: manual.status || 'Draft'
       });
       setCoverImage(manual.coverImage || null);
     } else {
       setFormData({
-        title: '', category: '', subCategory: '', subSubCategory: '', brand: '', model: '', price: '',
-        year: '', language: '', partNumber: '', tags: '', seoTitle: '', seoDescription: '', seoKeywords: ''
+        title: '', category: '', subCategory: '', subSubCategory: '', price: '',
+        year: '', language: '', partNumber: '', tags: '', seoTitle: '', seoDescription: '', seoKeywords: '',
+        status: 'Draft'
       });
       setCoverImage(null);
     }
@@ -286,22 +294,19 @@ const ManualModal = ({ isOpen, onClose, manual, onSave }) => {
 
                   <div className="grid grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Brand</label>
-                      <input 
-                        type="text"
-                        value={formData.brand}
-                        onChange={(e) => setFormData({...formData, brand: e.target.value})}
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-bold text-gray-900 focus:bg-white focus:border-red-500 transition-all outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Model</label>
-                      <input 
-                        type="text"
-                        value={formData.model}
-                        onChange={(e) => setFormData({...formData, model: e.target.value})}
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-bold text-gray-900 focus:bg-white focus:border-red-500 transition-all outline-none"
-                      />
+                      <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Status</label>
+                      <div className="relative">
+                        <select 
+                          value={formData.status}
+                          onChange={(e) => setFormData({...formData, status: e.target.value})}
+                          className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-bold text-gray-900 appearance-none focus:bg-white focus:border-red-500 transition-all outline-none cursor-pointer"
+                        >
+                          <option value="Published">Published</option>
+                          <option value="Draft">Draft</option>
+                          <option value="Archive">Archive</option>
+                        </select>
+                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                      </div>
                     </div>
                     <div>
                       <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Price (₹)</label>
@@ -520,11 +525,11 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, onArchive, manualTitle
 
 const Manuals = () => {
   const [manuals, setManuals] = React.useState([
-    { id: "SM-81794MT", title: "CAT 320D Excavator Service Manual", category: "Excavators", subCategory: "Service", brand: "Caterpillar", model: "320D", price: "2,500", date: "12 Oct 2023" },
-    { id: "SM-07642MS", title: "Komatsu PC200-8 Shop Manual", category: "Excavators", subCategory: "Shop", brand: "Komatsu", model: "PC200-8", price: "3,200", date: "10 Oct 2023" },
-    { id: "SM-06473MB", title: "John Deere 310G Backhoe Loader", category: "Loaders", subCategory: "Parts", brand: "John Deere", model: "310G", price: "1,800", date: "08 Oct 2023" },
-    { id: "SM-081794MS", title: "Volvo L120F Wheel Loader Manual", category: "Loaders", subCategory: "Service", brand: "Volvo", model: "L120F", price: "2,100", date: "05 Oct 2023" },
-    { id: "SM-03261WS", title: "Hitachi ZX200-3 Excavator Parts", id: "SM-03261WS", category: "Excavators", subCategory: "Parts", brand: "Hitachi", model: "ZX200-3", price: "1,500", date: "01 Oct 2023" },
+    { id: "SM-81794MT", title: "CAT 320D Excavator Service Manual", category: "Excavators", subCategory: "Service", status: "Published", price: "2,500", date: "12 Oct 2023" },
+    { id: "SM-07642MS", title: "Komatsu PC200-8 Shop Manual", category: "Excavators", subCategory: "Shop", status: "Published", price: "3,200", date: "10 Oct 2023" },
+    { id: "SM-06473MB", title: "John Deere 310G Backhoe Loader", category: "Loaders", subCategory: "Parts", status: "Draft", price: "1,800", date: "08 Oct 2023" },
+    { id: "SM-081794MS", title: "Volvo L120F Wheel Loader Manual", category: "Loaders", subCategory: "Service", status: "Published", price: "2,100", date: "05 Oct 2023" },
+    { id: "SM-03261WS", title: "Hitachi ZX200-3 Excavator Parts", category: "Excavators", subCategory: "Parts", status: "Archive", price: "1,500", date: "01 Oct 2023" },
   ]);
 
   const [selectedIds, setSelectedIds] = React.useState([]);
@@ -719,7 +724,7 @@ const Manuals = () => {
                     </th>
                     <th className="py-4 px-6">
                       <div className="flex items-center gap-2 text-xs uppercase tracking-wider font-bold text-gray-500">
-                        Brand / Model
+                        Status
                       </div>
                     </th>
                     <th className="py-4 px-4">
